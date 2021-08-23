@@ -1,0 +1,62 @@
+program Hw4;
+type
+  course = (north, south, west, east);
+  order = (up, left, right, back);
+const
+  names:array [course] of string = ('north', 'south' , 'west', 'east');
+var
+  K1, K2: course;
+  PR: order;
+  c:integer;
+
+function make_PR:order;
+var k:integer;
+begin
+  writeln('Введите приказ: 1 - up, 2 - left, 3 - right, 4- back');
+  readln(k);
+  case k of
+    1: make_PR:=up;
+    2: make_PR:=left;
+    3: make_PR:=right;
+    4: make_PR:=back;
+  end;
+end;
+
+function make_CR:course;
+var k:integer;
+begin
+  writeln('Введите курс: 1 - north, 2 - south, 3 - west, 4 - east');
+  readln(k);
+  case k of
+    1: make_CR:=north;
+    2: make_CR:=south;
+    3: make_CR:=west;
+    4: make_CR:=east;
+  end;
+end;
+
+function def_course(pr:order; cr:course):order;
+var k,i:integer;
+begin
+  writeln('Введите изменный приказ: ');
+  readln(k);
+  case k<>pr of
+    1: def_course:=up;
+    2: def_course:=left;
+    3: def_course:=right;
+    4: def_course:=back;
+  end;
+end;
+
+
+begin
+  writeln('Начальный приказ: ');
+  PR:= make_PR;
+  writeln('Начальный курс: ');
+  K1:= make_CR;
+  K2:=def_course(PR, K1);
+
+
+
+  readln;
+end.

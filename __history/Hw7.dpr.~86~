@@ -1,0 +1,260 @@
+program Hw7;
+
+uses
+  System.SysUtils;
+
+type
+  Taudirot = string[15];
+  Tnubmer = string[15];
+  Tsquare = string[15];
+
+  TrecDirectory = record
+              Audirot: Taudirot;
+              Nubmer: Tnubmer;
+              Square: Tsquare;
+             end;
+
+  TDirectoryFile = file of TrecDirectory;
+
+
+  var k,nm:integer;
+
+procedure open_file_read(var f:textfile);        //   открытие для чтения
+var name:string;
+    ok:boolean;
+begin
+  repeat
+    write('Введите имя ВХОДНОГО файла: ');
+    readln(name);
+    AssignFile(f,name);
+    ok:=FileExists(name);
+    if not ok
+    then
+      writeln('Такого файла не существует');
+  until ok;
+  Reset(f);
+end;
+
+
+procedure open_file_write(var f:textfile);      //    открытие для записи
+var name:string;
+    ok:boolean;
+    c:char;
+begin
+   repeat
+     ok:=true;
+     write('Введите имя ВЫХОДНОГО файла: ');
+     readln(name);
+     AssignFile(f,name);
+     if FileExists(name)
+     then
+       begin
+         writeln('Такой файл существует! Хотите перезаписать? Да -Y, Нет - любая клавиша');
+         readln(c);
+         ok:=c in ['y','Y'];
+       end;
+   until ok;
+   Rewrite(f);
+end;
+
+procedure open_file_read_TP(var f:TDirectoryFile ); //   открываем для чтения тип файла
+var name:string;
+    ok:boolean;
+begin
+  repeat
+    write('Введите имя ВХОДНОГО файла: ');
+    readln(name);
+    AssignFile(f,name);
+    ok:=FileExists(name);
+    if not ok
+    then
+      writeln('Такого файла не существует');
+  until ok;
+  Reset(f);
+end;
+
+
+procedure open_file_write_TP(var f:TDirectoryFile ); //   открываем для записи тип файла
+var name:string;
+    ok:boolean;
+    c:char;
+begin
+   repeat
+     ok:=true;
+     write('Введите имя ВЫХОДНОГО файла: ');
+     readln(name);
+     AssignFile(f,name);
+     if FileExists(name)
+     then
+       begin
+         writeln('Такой файл существует! Хотите перезаписать? Да -Y, Нет - любая клавиша');
+         readln(c);
+         ok:=c in ['y','Y'];
+       end;
+   until ok;
+   Rewrite(f);
+end;
+
+function nomber_zapis():integer;
+var i,n:integer;
+begin
+  write('Введите кол-во записей: ');
+  readln(n);
+  nomber_zapis := n;
+end;
+
+procedure read_rec_from_kb(var rec:TrecDirectory ); //            1
+var n,i:integer;
+begin
+  writeln('  Ввод записей  ');
+  with rec do
+  begin
+     write('Введите  номер аудитории: ');
+     readln(Audirot);
+     write('Введите кол-во мест: ');
+     readln(Nubmer);
+     write('Площадь: ');
+     readln(Square);
+     writeln;
+  end;
+end;
+
+procedure createfile_from_keybord;       //             1
+var i,n:integer;
+    fTp:TDirectoryFile ;
+    rec:TrecDirectory ;
+    c:char;
+begin
+  open_file_write_TP(ftp);
+  repeat
+  n:= nomber_zapis;
+    for i := 1 to n do
+    begin
+      read_rec_from_kb(rec);
+      write(fTp,rec);
+    end;
+    writeln('Снова перезаписать? Да -Y, Нет - любая клавиша');
+    readln(c);
+  until not(c in ['y','Y']);
+  closefile(fTp);
+end;
+
+procedure read_rec_from_txt(var f:textfile; var rec:TrecDirectory );      //        2
+begin
+  readln(f,rec.Audirot);
+  readln(f,rec.Nubmer);
+  readln(f,rec.Square);
+end;
+
+procedure createfile_from_txt;                   //
+var n,i:integer;
+    ftxt:textfile;
+    FTp:TDirectoryFile ;
+    rec:TrecDirectory ;
+begin
+
+  open_file_read(ftxt);
+  open_file_write_TP(FTp);
+
+  while not eof(ftxt) do
+    begin
+      read_rec_from_txt(ftxt,rec);
+      write(FTp,rec);
+      if not eof(ftxt)  then
+        readln(ftxt);
+    end;
+  closefile(ftxt);
+  closefile(FTp);
+end;
+
+procedure print_rec(var f:textfile; var rec:TrecDirectory );      //      3
+var n,i:integer;
+begin
+
+    writeln(f,rec.Audirot);
+    writeln(f,rec.Nubmer);
+    writeln(f,rec.Square);
+    writeln(f);
+end;
+
+procedure view;             //
+var fTp:TDirectoryFile ;
+    rec:TrecDirectory ;
+begin
+  open_file_read_TP(fTp);
+  while not eof(fTp) do
+    begin
+      read(fTp,rec);
+      print_rec(output,rec);
+    end;
+  closefile(fTp);
+end;
+
+
+procedure process_TP;             // 4
+var fInt: TDirectoryFile ;
+    fOut:TDirectoryFile ;
+    rec:TrecDirectory ;
+    NM, Nubmer: Tnubmer;
+begin
+  open_file_read_TP(fInt);
+  open_file_write_TP(fOut);
+  write('Введи критерий отбора(введи кол-во для сравнения): ');
+  readln(NM);
+
+  while not eof(fInt) do
+    begin
+      read(fInt,rec);
+      if rec.Nubmer < NM  then
+        write(fOut,rec);
+    end;
+  closefile(fInt);
+  closefile(FOut);
+end;
+
+
+procedure print_TP_to_txt;        //       5
+var fTxt:textfile;
+    fTp:TDirectoryFile ;
+    rec:TrecDirectory ;
+begin
+  open_file_read_TP(fTp);
+  open_file_write(fTxt);
+  while not eof(fTp) do
+    begin
+      read(fTp,rec);
+      print_rec(fTxt,rec);
+    end;
+  closefile(fTxt);
+  closefile(fTp);
+end;
+
+
+begin
+
+  repeat
+
+    writeln('1)Из консоли в тип. файл.');
+    writeln('2)из текстового файла в тип. файл.');
+    writeln('3)Просмотр файла типиз.');
+    writeln('4)Отбор по кол-ву  (по меньшему): ');
+    writeln('5)Типиз в текст.');
+    writeln('6)Выход.');
+      repeat
+          write('введите номер: ');
+          readln(k);
+          if (k<1) or (k>6)
+          then
+             writeln('Ошибка');
+        until k in [1..6];
+      case k of
+        1:createfile_from_keybord;
+        2:createfile_from_txt;
+        3:view;
+        4:process_TP;
+        5:print_TP_to_txt;
+      end;
+      writeln(' Конец работы!!! ');
+      writeln;
+  until k=6;
+end.

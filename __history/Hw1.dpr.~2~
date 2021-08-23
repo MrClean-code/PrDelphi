@@ -1,0 +1,84 @@
+program Hw1;
+
+uses
+  SysUtils;
+
+const n = 4;
+      m = 4;
+
+type
+  TStr = array [1..n] of integer;
+  TMatr = array [1..m] of TStr;
+
+var
+  Matr : TMatr;
+  temp2: boolean;
+  i,i2:integer;
+
+//1
+procedure read_Matr (var mt:TMatr);
+var
+   i,j : integer;
+begin
+  for i := 1 to n do
+    for j := 1 to m do
+      read (mt[i,j]);
+    readln;
+end;
+
+//2
+procedure write_Matr(var mt: Tmatr);
+var
+   i, j: integer;
+begin
+  for i := 1 to n do
+  begin
+    for j := 1 to m do
+    //write(UTF8ToConsole(mt[i,j]:3));
+      write(mt[i,j]:3);
+    writeln;
+  end;
+end;
+
+function two_equal_numbers_in_row(var mt:TMatr; var i2:integer):boolean;
+var i,j,k:integer;
+    flag:boolean;
+begin
+  flag := false;
+
+  i:=1;
+  while (i<=n) and not flag  do
+    begin
+      j:=1;
+      while (j<=m-1) and not flag  do
+        begin
+          k:=j+1;
+          while (k<=m) and not flag   do
+            begin
+            if mt[i,j] = mt[i,k] then
+              begin
+               flag:=true;
+               i2:=i;
+              end
+            else
+              k:=k+1;
+            end;
+            j:=j+1;
+        end;
+        i:=i+1;
+    end;
+two_equal_numbers_in_row := flag;
+end;
+
+begin
+//  writeln(UTF8ToConsole('¬ведите матрицу: '));
+writeln('Read matr: ');
+read_Matr(Matr);
+
+temp2:=two_equal_numbers_in_row(Matr,i2);
+if (temp2 = true) then
+  write(' Row:',i2,' = ', temp2)
+else
+  write(' NO equal nombers');
+readln;
+end.
